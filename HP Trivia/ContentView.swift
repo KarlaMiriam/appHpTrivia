@@ -13,6 +13,7 @@ struct ContentView: View {
     @State private var scalePlayButton = false
     @State private var moveBackgroundImage = false
     @State private var animateViewsIn = false
+    @State private var showInstructions = false
     
     var body: some View {
         GeometryReader { geo in
@@ -22,11 +23,11 @@ struct ContentView: View {
                     .frame(width: geo.size.width * 3, height: geo.size.height)
                     .padding(.top,3)
                     .offset(x: moveBackgroundImage ? geo.size.width/1.1 : -geo.size.width/1.1)
-                    //.onAppear {
-                       // withAnimation(.linear(duration: 60).repeatForever()) {
-                            //moveBackgroundImage.toggle()
-                        //}
-                    //}
+                    .onAppear {
+                        withAnimation(.linear(duration: 60).repeatForever()) {
+                            moveBackgroundImage.toggle()
+                        }
+                    }
                 
                 VStack {
                     VStack {
@@ -83,6 +84,7 @@ struct ContentView: View {
                             if animateViewsIn {
                                 Button {
                                     // SHow instructions screen
+                                    showInstructions.toggle()
                                 } label: {
                                     Image(systemName:
                                             "info.circle.fill")
@@ -91,6 +93,9 @@ struct ContentView: View {
                                     .shadow(radius: 5)
                                 }
                                 .transition(.offset(x: -geo.size.width/4))
+                                .sheet(isPresented: $showInstructions) {
+                                    Instructions()
+                                }
                             }
                         }
                         .animation(.easeOut(duration: 0.7).delay(2.7), value: animateViewsIn)
@@ -113,11 +118,11 @@ struct ContentView: View {
                                         .shadow(radius: 5)
                                 }
                                 .scaleEffect(scalePlayButton ? 1.2 : 1)
-                                //.onAppear {
-                                // withAnimation(.easeInOut(duration: 1.3).repeatForever()) {
-                                // scalePlayButton.toggle()
-                                //}
-                                //}
+                                .onAppear {
+                                 withAnimation(.easeInOut(duration: 1.3).repeatForever()) {
+                                 scalePlayButton.toggle()
+                                }
+                                }
                                 .transition(.offset(y: geo.size.height/3))
                             }
                         }
@@ -155,7 +160,7 @@ struct ContentView: View {
             .ignoresSafeArea()
             .onAppear {
                 animateViewsIn = true
-                //playAudio()
+                    playAudio()
             }
     }
     
