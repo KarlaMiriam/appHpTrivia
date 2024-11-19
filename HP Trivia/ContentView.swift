@@ -160,7 +160,7 @@ struct ContentView: View {
             .ignoresSafeArea()
             .onAppear {
                 animateViewsIn = true
-                    playAudio()
+                    //playAudio()
             }
     }
     
@@ -172,8 +172,8 @@ struct ContentView: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ContentView()
+//    }
+//}
