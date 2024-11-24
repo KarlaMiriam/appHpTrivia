@@ -9,11 +9,15 @@ import SwiftUI
 import AVKit
 
 struct ContentView: View {
+    @EnvironmentObject private var store: Store
+    @EnvironmentObject private var game: Game
     @State private var audioPlayer: AVAudioPlayer!
     @State private var scalePlayButton = false
     @State private var moveBackgroundImage = false
     @State private var animateViewsIn = false
     @State private var showInstructions = false
+    @State private var showSettings = false
+    @State private var playGame = false
     
     var body: some View {
         GeometryReader { geo in
@@ -28,7 +32,7 @@ struct ContentView: View {
                             moveBackgroundImage.toggle()
                         }
                     }
-                
+        
                 VStack {
                     VStack {
                         if animateViewsIn {
@@ -59,9 +63,9 @@ struct ContentView: View {
                                 Text("Recent Scores")
                                     .font(.title2)
                                 
-                                Text("33")
-                                Text("27")
-                                Text("15")
+                                Text("\(game.recentScores[0])")
+                                Text("\(game.recentScores[1])")
+                                Text("\(game.recentScores[2])")
                             }
                             .font(.title3)
                             .padding(.horizontal)
@@ -105,25 +109,38 @@ struct ContentView: View {
                         VStack {
                             if animateViewsIn {
                                 Button {
-                                    //Start new game
-                                    
+                                    filterQuestions()
+                                    game.startGame()
+                                    playGame.toggle()
                                 } label: {
                                     Text("Play")
                                         .font(.largeTitle)
                                         .foregroundStyle(.white)
                                         .padding(.vertical, 7)
                                         .padding(.horizontal, 50)
-                                        .background(.brown)
+                                        .background(store.books.contains(.active) ? .brown: .gray)
                                         .cornerRadius(7)
                                         .shadow(radius: 5)
                                 }
                                 .scaleEffect(scalePlayButton ? 1.2 : 1)
                                 .onAppear {
-                                 withAnimation(.easeInOut(duration: 1.3).repeatForever()) {
-                                 scalePlayButton.toggle()
-                                }
+                                    withAnimation(.easeInOut(duration: 1.3).repeatForever()) {
+                                        scalePlayButton.toggle()
+                                    }
                                 }
                                 .transition(.offset(y: geo.size.height/3))
+                                .fullScreenCover(isPresented: $playGame) {
+                                    Gameplay()
+                                        .environmentObject(game)
+                                        .onAppear {
+                                            audioPlayer
+                                                .setVolume(0, fadeDuration: 2)
+                                        }
+                                        .onDisappear{
+                                            audioPlayer.setVolume(1, fadeDuration: 3)
+                                        }
+                                }
+                                disabled(store.books.contains(.active) ? false : true)
                             }
                         }
                         .animation(.easeOut(duration: 0.7).delay(2), value: animateViewsIn)
@@ -134,8 +151,7 @@ struct ContentView: View {
                             if animateViewsIn {
                                 
                                 Button {
-                                    // Show Settings screen
-                                    
+                                    showSettings.toggle()
                                 } label: {
                                     Image(systemName: "gearshape.fill")
                                         .font(.largeTitle)
@@ -143,25 +159,40 @@ struct ContentView: View {
                                         .shadow(radius: 5)
                                 }
                                 .transition(.offset(x: geo.size.width/4))
+                                .sheet(isPresented: $showSettings) {
+                                    Settings()
+                                        .environmentObject(store)
+                                }
                             }
                         }
                         .animation(.easeOut(duration: 0.7).delay(2.7), value: animateViewsIn)
                         
                         Spacer()
                         
+                    }
+                    .frame(width: geo.size.width)
+                    
+                    VStack {
+                        if animateViewsIn{
+                            if store.books.contains(.active) == false {
+                                Text("No questions avaible. Go to settings. ")
+                                    .multilineTextAlignment(.center)
+                                    .transition(.opacity)
+                            }
                         }
-                            .frame(width: geo.size.width)
+                    }
+                    .animation(.easeInOut.delay(3), value: animateViewsIn)
                     
                     Spacer()
-                    }
                 }
-                .frame(width: geo.size.width, height: geo.size.height)
             }
-            .ignoresSafeArea()
-            .onAppear {
-                animateViewsIn = true
-                    //playAudio()
-            }
+            .frame(width: geo.size.width, height: geo.size.height)
+        }
+        .ignoresSafeArea()
+        .onAppear {
+            animateViewsIn = true
+            playAudio()
+        }
     }
     
     private func playAudio(){
@@ -170,10 +201,27 @@ struct ContentView: View {
         audioPlayer.numberOfLoops = -1
         audioPlayer.play()
     }
+    
+    private func filterQuestions() {
+        var books: [Int] = []
+        
+        for (index, status) in store.books.enumerated() {
+            if status == .active {
+                books.append(index+1)
+            }
+        }
+        
+        game.filterQuestions(to: books)
+        game.newQuestion()
+    }
 }
 
-//struct ContentView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ContentView()
-//    }
-//}
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            ContentView()
+                .environmentObject(Store())
+                .environmentObject(Game())
+        }
+    }
+}

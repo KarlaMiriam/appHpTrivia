@@ -9,12 +9,19 @@ import SwiftUI
 
 @main
 struct HP_TriviaApp: App {
-    let persistenceController = PersistenceController.shared
+    @StateObject private var store = Store()
+    @StateObject private var game = Game()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environmentObject(store)
+                .environmentObject(game)
+                .task {
+                    await store.loadProducts()
+                    game.loadScores()
+                    store.loadStatus()
+                }
         }
     }
 }
