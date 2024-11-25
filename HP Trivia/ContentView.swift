@@ -52,7 +52,7 @@ struct ContentView: View {
                             .transition(.move(edge: .top))
                         }
                     }
-                    .animation(.easeOut(duration: 0.7).delay(2), value: animateViewsIn)
+                     .animation(.easeOut(duration: 0.7).delay(2), value: animateViewsIn)
                     
                     
                     Spacer()
@@ -75,7 +75,7 @@ struct ContentView: View {
                             .transition(.opacity)
                         }
                     }
-                    .animation(.linear(duration: 1).delay(4), value: animateViewsIn)
+                     .animation(.linear(duration: 1).delay(4), value: animateViewsIn)
                     
                     
                     Spacer()
@@ -102,7 +102,7 @@ struct ContentView: View {
                                 }
                             }
                         }
-                        .animation(.easeOut(duration: 0.7).delay(2.7), value: animateViewsIn)
+                         .animation(.easeOut(duration: 0.7).delay(2.7), value: animateViewsIn)
                         
                         Spacer()
                         
@@ -143,7 +143,7 @@ struct ContentView: View {
                                 disabled(store.books.contains(.active) ? false : true)
                             }
                         }
-                        .animation(.easeOut(duration: 0.7).delay(2), value: animateViewsIn)
+                         .animation(.easeOut(duration: 0.7).delay(2), value: animateViewsIn)
                         
                         Spacer()
                         
@@ -165,7 +165,7 @@ struct ContentView: View {
                                 }
                             }
                         }
-                        .animation(.easeOut(duration: 0.7).delay(2.7), value: animateViewsIn)
+                         .animation(.easeOut(duration: 0.7).delay(2.7), value: animateViewsIn)
                         
                         Spacer()
                         
@@ -181,7 +181,7 @@ struct ContentView: View {
                             }
                         }
                     }
-                    .animation(.easeInOut.delay(3), value: animateViewsIn)
+                     .animation(.easeInOut.delay(3), value: animateViewsIn)
                     
                     Spacer()
                 }
@@ -191,7 +191,7 @@ struct ContentView: View {
         .ignoresSafeArea()
         .onAppear {
             animateViewsIn = true
-            playAudio()
+            //playAudio()
         }
     }
     
